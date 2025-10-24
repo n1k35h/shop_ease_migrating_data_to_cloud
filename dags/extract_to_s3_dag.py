@@ -48,7 +48,6 @@ extract_to_silver = PythonOperator(
 # Dependencies: Bronze layer to Silver layer
 sql_to_s3_tables >> extract_to_silver
 
-
 extract_to_gold = PythonOperator(
     task_id="extract_to_gold_s3",
     python_callable=s3_to_gold,
