@@ -1,0 +1,4 @@
+awswrangler
+apache-airflow-providers-amazon
+pandas
+boto3
