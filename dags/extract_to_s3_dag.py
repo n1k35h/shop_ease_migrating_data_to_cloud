@@ -45,7 +45,7 @@ extract_to_silver = PythonOperator(
     dag=dag
 )
 
-# Set dependencies: all bronze extraction tasks must finish before silver transformation
+# Dependencies: Bronze layer to Silver layer
 sql_to_s3_tables >> extract_to_silver
 
 
@@ -54,92 +54,5 @@ extract_to_gold = PythonOperator(
     python_callable=s3_to_gold,
     dag=dag
 )
+# Dependencies: Silver layer to Gold layer
 extract_to_silver >> extract_to_gold
-
-
-
-# Customers
-# sql_to_s3_customers = SqlToS3Operator(
-#     task_id = "extract_customers_to_bronze",
-#     sql_conn_id = "postgres_local",
-#     query = "SELECT * FROM customers;",
-#     s3_bucket = BUCKET,
-#     s3_key = "shopease-db-datalake/bronze/customers/dt={{ ds }}/customers.csv",
-#     aws_conn_id="aws_default",
-#     replace = True,
-#     file_format = "csv",
-#     pd_kwargs= {"index": False},
-#     dag = dag
-#     )
-
-# # Inventory
-# sql_to_s3_inventory = SqlToS3Operator(
-#     task_id = "extract_inventory_to_bronze",
-#     sql_conn_id = "postgres_local",
-#     query = "SELECT * FROM inventory;",
-#     s3_bucket = BUCKET,
-#     s3_key = "shopease-db-datalake/bronze/inventory/dt={{ ds }}/inventory.csv",
-#     aws_conn_id="aws_default",
-#     replace = True,
-#     file_format = "csv",
-#     pd_kwargs= {"index": False},
-#     dag = dag
-#     )
-
-# # Products
-# sql_to_s3_products = SqlToS3Operator(
-#     task_id = "extract_products_to_bronze",
-#     sql_conn_id = "postgres_local",
-#     query = "SELECT * FROM products;",
-#     s3_bucket = BUCKET,
-#     s3_key = "shopease-db-datalake/bronze/products/dt={{ ds }}/products.csv",
-#     aws_conn_id="aws_default",
-#     replace = True,
-#     file_format = "csv",
-#     pd_kwargs= {"index": False},
-#     dag = dag
-#     )
-
-# # Sale Transactions
-# sql_to_s3_sale_transactions = SqlToS3Operator(
-#     task_id = "extract_sale_transactions_to_bronze",
-#     sql_conn_id = "postgres_local",
-#     query = "SELECT * FROM sale_transactions;",
-#     s3_bucket = BUCKET,
-#     s3_key = "shopease-db-datalake/bronze/sale_transactionss/dt={{ ds }}/sale_transactions.csv",
-#     aws_conn_id="aws_default",
-#     replace = True,
-#     file_format = "csv",
-#     pd_kwargs= {"index": False},
-#     dag = dag
-#     )
-
-# # Sales Managers
-# sql_to_s3_sales_managers = SqlToS3Operator(
-#     task_id = "extract_sales_managers_to_bronze",
-#     sql_conn_id = "postgres_local",
-#     query = "SELECT * FROM sales_managers;",
-#     s3_bucket = BUCKET,
-#     s3_key = "shopease-db-datalake/bronze/sales_managers/dt={{ ds }}/sales_managers.csv",
-#     aws_conn_id="aws_default",
-#     replace = True,
-#     file_format = "csv",
-#     pd_kwargs= {"index": False},
-#     dag = dag
-#     )
-
-# # Stores
-# sql_to_s3_stores = SqlToS3Operator(
-#     task_id = "extract_stores_to_bronze",
-#     sql_conn_id = "postgres_local",
-#     query = "SELECT * FROM stores;",
-#     s3_bucket = BUCKET,
-#     s3_key = "shopease-db-datalake/bronze/stores/dt={{ ds }}/stores.csv",
-#     aws_conn_id="aws_default",
-#     replace = True,
-#     file_format = "csv",
-#     pd_kwargs= {"index": False},
-#     dag = dag
-#     )
-
-
