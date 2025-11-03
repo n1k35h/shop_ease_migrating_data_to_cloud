@@ -31,7 +31,7 @@ for tbl in tables:
         sql_conn_id="postgres_local",
         query=f"SELECT * FROM {tbl};",
         s3_bucket=BUCKET,
-        s3_key=f"bronze/{tbl}/dt={{ ds }}/{tbl}.csv",
+        s3_key=f"bronze/{tbl}/dt={{{{ ds }}}}/{tbl}.csv",
         aws_conn_id="aws_default",
         replace=True,
         file_format="csv",

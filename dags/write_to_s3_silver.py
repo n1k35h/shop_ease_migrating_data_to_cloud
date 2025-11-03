@@ -12,7 +12,7 @@ def transform_to_silver(**context):
               "sale_transactions", "sales_managers", "stores"]
 
     for tbl in tables:
-        path = f"s3://{bucket}/bronze/{tbl}/dt={ ds }/*.csv"
+        path = f"s3://{bucket}/bronze/{tbl}/dt={ds}/*.csv"
         df = wr.s3.read_csv(
             path,
             boto3_session=session
