@@ -13,7 +13,7 @@ This project demonstrates how to migrate on-premise PostgreSQL transactional dat
 
 ## Project Structure
 
-![](project_structure.png)
+![](images/project_structure.png)
 
 ## Requirements
 -  Python 3.10+
@@ -95,7 +95,7 @@ The below steps needs to be executed before Apache Airflow can send data to AWS 
    psql -h localhost -p <host_port> -U <user> -d <database_name>
    ```
    -  Checked the database to view if the tables have been restored and listed successfully, which it has:
-   ![](db_tbl_docker_psql.png)
+   ![](images/db_tbl_docker_psql.png)
 
 4. **3 Python script file** was created and placed in the *dags folder* for Airflow to automatically detect and schedule, with a brief description of each file's responsibility.:
    -  [extract_to_s3_dag.py](dags/extract_to_s3_dag.py) - This file contains the Airflow DAG that orchestrates the ETL pipeline. It schedules the extraction of tables from a Postgres database to the S3 Bronze layer, then triggers two PythonOperator tasks: one for transforming Bronze data to Silver (using a function from `write_to_s3_silver.py`), and another for moving Silver data to Gold (using a function from `write_to_s3_gold.py`). The DAG enforces the correct order of operations by defining dependencies between these tasks, ensuring a smooth and reliable data flow through each stage of the pipeline.
@@ -109,128 +109,108 @@ The below steps needs to be executed before Apache Airflow can send data to AWS 
    ```
    -  Creating a network and connecting both container thats got the dump file and network together, so both can communiate to each other.after the docker command is executed `docker-compose up` is up and running:
 
-   Before altering the docker-compose.yaml file, enter the below docker commands:
+   -  Before altering the docker-compose.yaml file, enter the below docker commands:
    ```wsl
    docker-compose down
    ```
-
-   Stops the active container from running as the container needs to be altered:
+   -  Stops the active container from running as the container needs to be altered:
    ```wsl
    docker stop <container_name>
    ```
-
-   Create a network:
+   -  Create a network:
    ```wsl
    docker network create <network_name>
    ```
+   -  Enter the network name to .yaml file:
+      e.g:
+      ![](images/nw_in_dc_yaml.png)
+   -  After each services enter the network name:
+      e.g:
+      ![](images/nw_after_each_servs.png)
+   -  Connect both Container and network together:
+      ```wsl
+      docker network connect <network_name> <container_name>
+      ```
+   -  Check the container to view if the network_name is added to the container
+      ```wsl
+      docker start <container_name>
+      ```
+   -  Network name should be added at the end of the container, like the one below:
+      e.g:
+      ```wsl
+      docker inspect <container_name>
+      ```
+      ![](images/nw_in_cont.png)
+   -  After all that is done, enter this command `docker-compose up -d` for all the services in the .yaml file will be added and running in the container list.
+      ```wsl
+      docker ps
+      ```
+      Below is an example of the output snip of the container services that are running. For a Airflow to run successfully all containers in here needs to be 'healthy', if a container is unhealthy then the Access Airflow UI will not be running, so below docker command is executed for the container to restart:
+      ```
+      docker start <container_id>
+      ```
+      ![](images/docker_cont_ser.png)
 
-   Enter the network name to .yaml file:
-   
-   e.g:
-
-   ![](nw_in_dc_yaml.png)
-
-   After each services enter the network name:
-   e.g:
-
-   ![](nw_after_each_servs.png)
-
-   Connect both Container and network together:
-   ```wsl
-   docker network connect <network_name> <container_name>
-   ```
-   Check the container to view if the network_name is added to the container
-   ```wsl
-   docker start <container_name>
-   ```
-   Network name should be added at the end of the container, like the one below:
-   
-   e.g:
-   ```wsl
-   docker inspect <container_name>
-   ```
-   ![](nw_in_cont.png)
-   
-
-   After all that is done, enter this command `docker-compose up -d` for all the services in the .yaml file will be added and running in the container list.
-
-   ```wsl
-   docker ps
-   ```
-   Below is an example of the output snip of the container services that are running. For a Airflow to run successfully all containers in here needs to be 'healthy', if a container is unhealthy then the Access Airflow UI will not be running, so below docker command is executed for the container to restart:
-   ```
-   docker start <container_id>
-   ```
-   ![](docker_cont_ser.png)
-
-   Once all containers are 'healthy' *Step 6* is next.
+   -  Once all containers are 'healthy' *Step 6* is next.
 
 6. **Access Airflow UI**
    Visit [http://localhost:8080](http://localhost:8080) and trigger the `bronze_extract_shopease` DAG.
 
-   if there is an error from running the Airflow UI, that will mean that airflow-webserver needs to be altered next as the legacy data will require for the data to be transferred over and stored in the S3 Bucket.
+   -  If there is an error from running the Airflow UI, that will mean that airflow-webserver needs to be altered next as the legacy data will require for the data to be transferred over and stored in the S3 Bucket.
 
-   ```wsl
-   docker-compose down
-   ```
-   ```wsl
-   docker stop <container_id_for_airflow-webserver>
-   ```
-   Inside the airflow-webserver container:
-   ```wsl
-   docker exec -it <container_id_for_airflow-webserver> bash
-   ```
-   e.g:
-   ```wsl
-   airflow@<container_id>:/airflow$
-   ```
+      ```wsl
+      docker-compose down
+      ```
+      ```wsl
+      docker stop <container_id_for_airflow-webserver>
+      ```
+      Inside the airflow-webserver container:
+      ```wsl
+      docker exec -it <container_id_for_airflow-webserver> bash
+      ```
+      e.g:
+      ```wsl
+      airflow@<container_id>:/airflow$
+      ```
 
-   Once inside the airflow-server container, create a database and restore the dump file for the airflow-webserver to be utilised
+      Once inside the airflow-server container, create a database and restore the dump file for the airflow-webserver to be utilised
 
-   Exit and restart the `docker-compose -d` and check if all container services are healthy and running. Re-visit [http://localhost:8080](http://localhost:8080) and to check if Airflow UI is up and `bronze_extract_shopease` DAG is triggered.
+   -  Exit and restart the `docker-compose -d` and check if all container services are healthy and running. Re-visit [http://localhost:8080](http://localhost:8080) and to check if Airflow UI is up and `bronze_extract_shopease` DAG is triggered.
 
-   If an error occured (like the one below), then it a connection to S3 Bucket that wasn't connected successfully on Airflow UI
-
-   ![](airflow_dag_ui.png)
+      If an error occured (like the one below), then it a connection to S3 Bucket that wasn't connected successfully on Airflow UI:
+      ![](images/airflow_dag_ui.png)
 
 7. **Entering credentials in Airflow** for successful connection to **S3 Bucket**.
    
    Once connection to Airflow was made, the below section needs to be filled in: 
    -  **Admin --> Connection**:
-   ![](aws_admin_con.png)
+   ![](images/aws_admin_con.png)
    -  and **Admin --> Variables**:
       Enter the **Access Key, Secret Key** and **Region** from the `.env` file
    -  Once all credentials are entered, restart the trigger the DAG and this time the Airflow UI should run successfully, like the one below:
-   ![](af_ui_suc.png)
+   ![](images/af_ui_suc.png)
 
-8. **Data send to S3 Bucket** - Check the AWS S3 Bucket and there should be folders and files created and store with csv and parquet files
+8. **Data send to S3 Bucket** - Verify your AWS S3 bucket to ensure that the expected folders and files have been created. Data should be stored in both CSV and Parquet formats. An example is shown below:
+e.g:
+   1. [Folders created in S3 Bucket](images/extract_to_s3_bucket1.png)
+   2. [.csv raw data files are stored in the Bronze folder](images/extract_to_s3_bucket2.png)
+   3. [Data Transformation and stored in Silver folder as .parquet file](images/extract_to_s3_bucket3.png)
+   4. [Summary of the parquet file is created and saved](images/extract_to_s3_bucket4.png) inside the Gold folder
 
 9. **Check AWS Glue and Athena**  
    Transformed data in Silver folder that is send automatically to AWS Glue and AWS Athena once Gold layer is triggered, which allows analyst to perform SQL queries.
+   e.g:
+   **AWS Glue**
+   -   The .parquet files inside Silver folder of the S3 Bucket are automatically sent to AWS Glue and stored in the Database of the Data Catalog for AWS Athena to retrieve the file, analysis and process the file. An example is shown below:
 
-## Data Visualisation
-After Airflow UI ran successfully, Legacy Data is send and store in **S3 Bucket**:
+         e.g:
+            ![](images/transfer_to_aws_glue.png)
 
-e.g:
-1. [Folders created in S3 Bucket](extract_to_s3_bucket1.png)
-2. [.csv raw data files are stored in the Bronze folder](extract_to_s3_bucket2.png)
-3. [Data Transformation and stored in Silver folder as .parquet file](extract_to_s3_bucket3.png)
-4. [Summary of the parquet file is created and saved](extract_to_s3_bucket4.png) inside the Gold folder
-
-**AWS Glue**
-
-The .parquet files inside Silver folder of the S3 Bucket are automatically sent to AWS Glue and stored in the Database of the Data Catalog for AWS Athena to retrieve the file, analysis and process the file. An example is shown below
-
-e.g:
-
-![](transfer_to_aws_glue.png)
-
-**AWS Athena**
-
-Once Athena retrieves the data from AWS Glue database, it allows Analyst users to query the database/ tables. Example of the AWS Athena is shown below
-
-![](aws_athena_sql_queries.png)
-
+   **AWS Athena**
+   -   Once Athena retrieves the data from AWS Glue database, it allows Analyst users to query the database/ tables. Example of the AWS Athena is shown below:
+   
+         e.g:
+         ![](images/aws_athena_sql_queries.png)
 
 ## Notes
 **AWS Wrangler** - utilised instead of AWS Glue Crawler because it provides direct, programmatic control over data transformation and cataloging within Python scripts. With AWS Wrangler, you can read, clean, and write data to S3 in Parquet format and register tables in the Glue Data Catalog database all in one step, making the ETL process more efficient and fully automatable within the Airflow pipeline, without needing to trigger separate Glue Crawler jobs. This approach offers greater flexibility and integration for custom data processing workflows.
