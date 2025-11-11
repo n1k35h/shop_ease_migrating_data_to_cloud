@@ -118,11 +118,17 @@ The below steps needs to be executed before Apache Airflow can send data to AWS 
    docker network create <network_name>
    ```
    -  Enter the network name to .yaml file:
+      
       e.g:
+
       ![](images/nw_in_dc_yaml.png)
+
    -  After each services enter the network name:
+      
       e.g:
+      
       ![](images/nw_after_each_servs.png)
+
    -  Connect both Container and network together:
       ```wsl
       docker network connect <network_name> <container_name>
