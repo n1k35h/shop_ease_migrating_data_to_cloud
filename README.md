@@ -18,16 +18,10 @@ This project demonstrates how to migrate on-premise PostgreSQL transactional dat
 ## Requirements
 -  Python 3.10+
 -  Dump file to restore the Legacy data migrating to AWS Cloud
--  Docker Environment
--  docker-compose.yaml file
+-  Docker & Docker Compose
 -  Apache Airflow
--  AWS S3, Glue & Athena
-
--  Python packages:
-   -  awswrangler
-   -  apache-airflow-providers-amazon
-   -  pandas
-   -  boto3
+-  AWS S3, Glue & Athena permission
+-  Python packages: awswrangler, apache-airflow-providers-amazon, pandas, boto3
 -  Install dependencies with:
    ```
    pip install awswrangler apache-airflow-providers-amazon pandas boto3
@@ -94,8 +88,10 @@ The below steps needs to be executed before Apache Airflow can send data to AWS 
    ```
    psql -h localhost -p <host_port> -U <user> -d <database_name>
    ```
-   -  Checked the database to view if the tables have been restored and listed successfully, which it has:
-   ![](images/db_tbl_docker_psql.png)
+   -  Checked the database to view if the tables have been restored and listed successfully, an example is shown below:
+      
+      e.g:
+      ![](images/db_tbl_docker_psql.png)
 
 4. **3 Python script file** was created and placed in the *dags folder* for Airflow to automatically detect and schedule, with a brief description of each file's responsibility.:
    -  [extract_to_s3_dag.py](dags/extract_to_s3_dag.py) - This file contains the Airflow DAG that orchestrates the ETL pipeline. It schedules the extraction of tables from a Postgres database to the S3 Bronze layer, then triggers two PythonOperator tasks: one for transforming Bronze data to Silver (using a function from `write_to_s3_silver.py`), and another for moving Silver data to Gold (using a function from `write_to_s3_gold.py`). The DAG enforces the correct order of operations by defining dependencies between these tasks, ensuring a smooth and reliable data flow through each stage of the pipeline.
@@ -190,14 +186,16 @@ The below steps needs to be executed before Apache Airflow can send data to AWS 
    -  Once all credentials are entered, restart the trigger the DAG and this time the Airflow UI should run successfully, like the one below:
    ![](images/af_ui_suc.png)
 
-8. **Data send to S3 Bucket** - Verify your AWS S3 bucket to ensure that the expected folders and files have been created. Data should be stored in both CSV and Parquet formats. An example is shown below:
+## Data Visualation
+
+1. **Data send to S3 Bucket** - Verify your AWS S3 bucket to ensure that the expected folders and files have been created. Data should be stored in both CSV and Parquet formats. An example is shown below:
 e.g:
    1. [Folders created in S3 Bucket](images/extract_to_s3_bucket1.png)
    2. [.csv raw data files are stored in the Bronze folder](images/extract_to_s3_bucket2.png)
    3. [Data Transformation and stored in Silver folder as .parquet file](images/extract_to_s3_bucket3.png)
    4. [Summary of the parquet file is created and saved](images/extract_to_s3_bucket4.png) inside the Gold folder
 
-9. **Check AWS Glue and Athena**  
+2. **Check AWS Glue and Athena**  
    Transformed data in Silver folder that is send automatically to AWS Glue and AWS Athena once Gold layer is triggered, which allows analyst to perform SQL queries.
    e.g:
    **AWS Glue**
@@ -223,7 +221,7 @@ Athena pricing is based on the amount of data scanned per query.
 
    $5.00 × (100 GB / 1024 GB) ≈ $0.50 per query.
 
--  Another example, if a query scans is less than 1TB (e.g: 45.5MB), then the following calaculation is utilised:
+-  Another example of Athena pricing, if a query scans is less than 1TB (e.g: 45.5MB), then the following calaculation is utilised:
 
    1 TB = 1 024 GB = 1 048 576 MB
 
