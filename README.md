@@ -233,10 +233,9 @@ Athena pricing is based on the amount of data scanned per query.
 
    The price per MB = $5 / 1 048 576 ≈ $0.000004768 per MB
 
-   For If one SQL query scans all these tables (≈ 45.485 MB):
+   If one SQL query scans all these tables (≈ 45.485 MB):
 
    45.485𝑀𝐵 × $0.000004768 = $0.0002168
-   45.485MB×$0.000004768=$0.0002168
    = US $0.00022 (i.e., ~0.02 cents per query) - As the MB is above 10MB (which is a minimum), so no rounding needed.
 
 - Optimizing data formats (like using Parquet) and partitioning can significantly reduce the amount of data scanned and lower costs.
