@@ -1,4 +1,4 @@
-# ShopEase: Migrating On-Premise Data to the Cloud
+# Migrating On-Premise Data to the Cloud
 
 This project demonstrates how to migrate on-premise PostgreSQL transactional data to a cloud-based data lake using Apache Airflow, AWS S3, Glue, and Athena. The pipeline follows the Medallion Architecture (Bronze, Silver, Gold) to modernize data accessibility and enable analytics at scale.
 
