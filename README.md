@@ -1,4 +1,4 @@
-# Migrating On-Premise Data to the Cloud
+# ShopEase: Migrating On-Premise Data to the Cloud
 
 This project demonstrates how to migrate on-premise PostgreSQL transactional data to a cloud-based data lake using Apache Airflow, AWS S3, Glue, and Athena. The pipeline follows the Medallion Architecture (Bronze, Silver, Gold) to modernize data accessibility and enable analytics at scale.
 
@@ -118,15 +118,11 @@ The below steps needs to be executed before Apache Airflow can send data to AWS 
    docker network create <network_name>
    ```
    -  Enter the network name to .yaml file:
-      
       e.g:
-
       ![](images/nw_in_dc_yaml.png)
 
    -  After each services enter the network name:
-      
       e.g:
-      
       ![](images/nw_after_each_servs.png)
 
    -  Connect both Container and network together:
@@ -223,22 +219,13 @@ e.g:
 
 Athena pricing is based on the amount of data scanned per query. 
 
--  For example, the cost is $5.00 per terabyte (TB) scanned if the file exceed more than 1(TB). If a query scans 100 GB of data, the cost would be:
+-  For example, the cost is $5.00 per terabyte (TB) scanned. If a query scans 100 GB of data, the cost would be $0.49 per query:
 
-   $5.00 × (100 GB / 1024 GB) ≈ $0.50 per query.
+   $5.00 × (100 GB / 1024 GB) ≈ $0.49 per query.
 
--  Another example of Athena pricing, if a query scans is less than 1TB (e.g: 45.5MB), then the following calaculation is utilised:
-
-   1 TB = 1 024 GB = 1 048 576 MB
-
-   The price per MB = $5 / 1 048 576 ≈ $0.000004768 per MB
-
-   If one SQL query scans all these tables (≈ 45.485 MB):
-
-   45.485𝑀𝐵 × $0.000004768 = $0.0002168
-   = US $0.00022 (i.e., ~0.02 cents per query) - As the MB is above 10MB (which is a minimum), so no rounding needed.
-
-- Optimizing data formats (like using Parquet) and partitioning can significantly reduce the amount of data scanned and lower costs.
+**Cost Optimisation:**
+-  Data is stored in Parquet format and partitioned by date, significantly reducing the amount of data scanned by Athena.
+-  Automated workflows and efficient data formats to ensure the pipeline is both scalable and cost-effective.
 
 ## Author:
 Developed by Nikesh Mistry, If you like this project, please give this project a ⭐, thanks 😄 
