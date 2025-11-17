@@ -1,4 +1,4 @@
-# ShopEase: Migrating On-Premise Data to the Cloud
+# Migrating On-Premise Data to the Cloud
 
 This project demonstrates how to migrate on-premise PostgreSQL transactional data to a cloud-based data lake using Apache Airflow, AWS S3, Glue, and Athena. The pipeline follows the Medallion Architecture (Bronze, Silver, Gold) to modernize data accessibility and enable analytics at scale.
 
@@ -221,7 +221,7 @@ Athena pricing is based on the amount of data scanned per query.
 
 -  For example, the cost is $5.00 per terabyte (TB) scanned. If a query scans 100 GB of data, the cost would be $0.49 per query:
 
-   $5.00 × (100 GB / 1024 GB) ≈ $0.49 per query.
+   $5.00 × (100 GB / 1024 GB) = $0.49 per query.
 
 **Cost Optimisation:**
 -  Data is stored in Parquet format and partitioned by date, significantly reducing the amount of data scanned by Athena.
