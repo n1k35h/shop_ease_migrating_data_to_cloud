@@ -100,6 +100,7 @@ The below steps needs to be executed before Apache Airflow can send data to AWS 
 
 5. **Start Airflow with Docker Compose**
    -  Copy `docker-compose.yaml` command from https://airflow.apache.org/docs/apache-airflow/stable/howto/docker-compose/index.html and paste the below in Bash:
+   
    ```bash
    curl -LfO 'https://airflow.apache.org/docs/apache-airflow/3.1.2/docker-compose.yaml'
    ```
@@ -118,11 +119,15 @@ The below steps needs to be executed before Apache Airflow can send data to AWS 
    docker network create <network_name>
    ```
    -  Enter the network name to .yaml file:
+
       e.g:
+
       ![](images/nw_in_dc_yaml.png)
 
    -  After each services enter the network name:
+
       e.g:
+
       ![](images/nw_after_each_servs.png)
 
    -  Connect both Container and network together:
